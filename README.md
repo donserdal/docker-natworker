@@ -1,3 +1,4 @@
+'''
 version: '3'
 services:
   natworker:
@@ -18,7 +19,7 @@ services:
 	  - WEBHOOK_COLOR='Webhook Color'
 	  - WEBHOOK_USER='Webhook User'
     image: donserdal/natworker
-	
+'''	
 	
 	
     
