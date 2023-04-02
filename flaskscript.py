@@ -73,7 +73,7 @@ def DoNASFunc(port=None):
 
 class DoNAT5081(Resource):
     def get(self):
-        Result=DoNASFunc('5081')
+        Result=DoNASFunc('5001')
         return Result
 
 class DoNAT14659(Resource):
