@@ -78,7 +78,7 @@ class DoNAT5081(Resource):
 
 class DoNAT14659(Resource):
     def get(self):
-        Result=DoNASFunc('14659')
+        Result=DoNASFunc('51821')
         return Result
 
 api.add_resource(DoNAT5081, '/fw-nat-nas')
