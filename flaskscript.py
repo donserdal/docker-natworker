@@ -14,24 +14,32 @@ app = Flask(__name__)
 api = Api(app)
 
 # Firewall Settings
-endpoint     = os.environ.get('FW_ENDPOINT')   # 'https://<PFsense URL>/api/v1/firewall/nat/port_forward'
-ApplyPoint   = os.environ.get('FW_APPLYPOINT') # 'https://<PFsense URL>/api/v1/firewall/apply'
-username     = os.environ.get('FW_USERNAME')   # 'Username'
-Password     = os.environ.get('FW_PASSWORD')   # 'Password'
+endpoint     = os.environ.get('FW_ENDPOINT')    # 'https://<PFsense URL>/api/v1/firewall/nat/port_forward'
+ApplyPoint   = os.environ.get('FW_APPLYPOINT')  # 'https://<PFsense URL>/api/v1/firewall/apply'
+clientID     = os.environ.get('FW_CLIENTID')    # 'Client ID'
+clientToken  = os.environ.get('FW_CLIENTTOKEN') # 'Client Token'
 
 # Webhook Settings
-WebhookURL   = os.environ.get('WEBHOOK_URL')   # 'https://discord.com/api/webhooks/<ID>/<Auth_KEY>'
-WebhookTitle = os.environ.get('WEBHOOK_TITLE') # 'Webhook Title'
-WebhookColor = os.environ.get('WEBHOOK_COLOR') # 'Webhook Color'
-WebhookUser  = os.environ.get('WEBHOOK_USER')  # 'Webhook User'
+WebhookURL   = os.environ.get('WEBHOOK_URL')    # 'https://discord.com/api/webhooks/<ID>/<Auth_KEY>'
+WebhookTitle = os.environ.get('WEBHOOK_TITLE')  # 'Webhook Title'
+WebhookColor = os.environ.get('WEBHOOK_COLOR')  # 'Webhook Color'
+WebhookUser  = os.environ.get('WEBHOOK_USER')   # 'Webhook User'
+
+headers = {
+    "Authorization" : "{} {}".format(clientID, clientToken),
+    'accept' : 'application/json'
+}
 
 def GetNAT(port=None):
     # Auth Section
     JsonDict = {
         "local-port__contains": port
     }
-    response = requests.get(endpoint, json=JsonDict, verify=False, auth = HTTPBasicAuth(username, Password))
+    response = requests.get(endpoint, headers=headers, json=JsonDict, verify=False)
     response_json = response.json()
+    if response_json['code'] == 403:
+        raise Exception("403 please check config") 
+
     NATID = list(response_json['data'].keys())[0]
     if 'disabled' not in response_json['data']['{}'.format(NATID)]:
         RuleEnabled = True
@@ -44,9 +52,9 @@ def DoNAT(id=None, Status=None):
         "id": id,
         "disabled": Status
     }
-    response = requests.put(endpoint, json=JsonDict, verify=False, auth = HTTPBasicAuth(username, Password))
+    response = requests.put(endpoint, headers=headers, json=JsonDict, verify=False)
     response_json = response.json()
-    response = requests.post(ApplyPoint, verify=False, auth = HTTPBasicAuth(username, Password))
+    response = requests.post(ApplyPoint, headers=headers ,verify=False)
     print("   - [DoNAT] Pushed status: {}".format(response.status_code))
 
 def DoNASFunc(port=None):
@@ -71,21 +79,21 @@ def DoNASFunc(port=None):
     response = webhook.execute()
     return {'NAT': Status, 'Port': port}
 
-class DoNAT5081(Resource):
+class DoNATNAS(Resource):
     def get(self):
         Result=DoNASFunc('5001')
         return Result
 
-class DoNAT14659(Resource):
+class DoNATVPN(Resource):
     def get(self):
         Result=DoNASFunc('51820')
         return Result
 
-api.add_resource(DoNAT5081, '/fw-nat-nas')
-api.add_resource(DoNAT14659, '/fw-nat-vpn')
+api.add_resource(DoNATNAS, '/fw-nat-nas')
+api.add_resource(DoNATVPN, '/fw-nat-vpn')
 
 
 if __name__ == '__main__':
-    # Start server 
+    # Start server
     serve(app, host="0.0.0.0", port=5000)
-    
+
