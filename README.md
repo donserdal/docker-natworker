@@ -13,7 +13,7 @@ services:
       - FW_ENDPOINT=https://<PFsense URL>/api/v1/firewall/nat/port_forward
       - FW_APPLYPOINT=https://<PFsense URL>/api/v1/firewall/apply
       - FW_CLIENTID=<Client token>
-      - FW_CLIENTTOKEN=<Cleint Token>
+      - FW_CLIENTTOKEN=<Client Token>
       - WEBHOOK_URL=https://discord.com/api/webhooks/<ID>/<Auth_KEY>
       - WEBHOOK_TITLE=Webhook Title
       - WEBHOOK_COLOR=Webhook Color
