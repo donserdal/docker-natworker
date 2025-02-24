@@ -16,8 +16,7 @@ api = Api(app)
 # Firewall Settings
 endpoint     = os.environ.get('FW_ENDPOINT')    # 'https://<PFsense URL>/api/v1/firewall/nat/port_forward'
 ApplyPoint   = os.environ.get('FW_APPLYPOINT')  # 'https://<PFsense URL>/api/v1/firewall/apply'
-clientID     = os.environ.get('FW_CLIENTID')    # 'Client ID'
-clientToken  = os.environ.get('FW_CLIENTTOKEN') # 'Client Token'
+FWAPI        = os.environ.get('FW_APIKey')    # 'API Key'
 
 # Webhook Settings
 WebhookURL   = os.environ.get('WEBHOOK_URL')    # 'https://discord.com/api/webhooks/<ID>/<Auth_KEY>'
@@ -26,7 +25,7 @@ WebhookColor = os.environ.get('WEBHOOK_COLOR')  # 'Webhook Color'
 WebhookUser  = os.environ.get('WEBHOOK_USER')   # 'Webhook User'
 
 headers = {
-    "Authorization" : "{} {}".format(clientID, clientToken),
+    "FWAPI" : "{}".format(FWAPI),
     'accept' : 'application/json'
 }
 
